@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		obsSt,
-		rapidWind,
-		type ObsStObject,
-		type RapidWindObject
-	} from '$lib/weatherflow-parser';
+	import { obsSt, rapidWind, type ObsStObject, type RapidWindObject } from '$lib/weatherflow';
 
 	import { io } from 'socket.io-client';
 	import { celsiusToFarenheit, mpsToMph } from '$lib/conversions';
