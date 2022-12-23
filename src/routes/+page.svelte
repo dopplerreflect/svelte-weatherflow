@@ -4,27 +4,33 @@
 	import {
 		decodeObservationEvent,
 		decodeRapidWindEvent,
+		getObservationCache,
+		getRapidWindCache,
 		type DecodedObservationEvent,
-		type DecodedRapidWindEvent
+		type DecodedRapidWindEvent,
+		type ObservationEvent,
+		type RapidWindEvent
 	} from '$lib/weatherflow';
 
 	let rapid_wind: DecodedRapidWindEvent = decodeRapidWindEvent();
 	let obs_st: DecodedObservationEvent = decodeObservationEvent();
+	let rapidWindCache = getRapidWindCache();
+	let observationCache = getObservationCache();
 
 	const socket = io();
 
 	socket.on('connection', (message: any) => {
 		console.log(message);
 	});
-
-	socket.on('weatherflow-message', (message: any) => {
-		if (message.type === 'rapid_wind') rapid_wind = decodeRapidWindEvent(message.ob);
-		if (message.type === 'obs_st') obs_st = decodeObservationEvent(message.obs);
+	socket.on('rapid_wind', (message: RapidWindEvent) => {
+		rapid_wind = decodeRapidWindEvent(message.ob);
+		rapidWindCache = getRapidWindCache();
+	});
+	socket.on('obs_st', (message: ObservationEvent) => {
+		obs_st = decodeObservationEvent(message.obs);
+		observationCache = getObservationCache();
 	});
 </script>
-
-<code>{JSON.stringify(rapid_wind, null, 2)}</code>
-<code>{JSON.stringify(obs_st, null, 2)}</code>
 
 <p>Temperature: {celsiusToFarenheit(obs_st.airTemperature)}</p>
 <ul>
@@ -34,6 +40,10 @@
 </ul>
 
 <p>Wind Speed: {mpsToMph(rapid_wind.speed)}</p>
+<p>Wind Direction: {rapid_wind.direction}</p>
+
+<code>{JSON.stringify(rapidWindCache, null, 2)}</code>
+<code>{JSON.stringify(observationCache, null, 2)}</code>
 
 <style>
 	code {
