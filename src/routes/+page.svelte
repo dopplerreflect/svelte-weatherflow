@@ -1,36 +1,54 @@
 <script lang="ts">
-	import { weatherflowParser } from '$lib/weatherflow-parser';
-  import type { WeatherflowData } from '$lib/weatherflow-parser';
+	import {
+		obsSt,
+		rapidWind,
+		type ObsStObject,
+		type RapidWindObject
+	} from '$lib/weatherflow-parser';
 
-  import { io } from 'socket.io-client'
+	import { io } from 'socket.io-client';
+	import { celsiusToFarenheit, mpsToMph } from '$lib/conversions';
 
-  let rapid_wind: WeatherflowData = { type: 'null' };
-  let obs_st = {};
+	let rapid_wind: RapidWindObject | undefined;
+	let obs_st: ObsStObject | undefined;
 
-  const socket = io();
+	const socket = io();
 
-  socket.on('join', (message: any) => {
-    console.log(message)
-  })
+	socket.on('join', (message: any) => {
+		console.log(message);
+	});
 
-  socket.on('weatherflow-message', (message: any) => {
-    // if(message.type === 'rapid_wind') (rapid_wind = message.ob);
-    // if(message.type === 'obs_st') (obs_st = message.obs);
-    let parsedMessage = weatherflowParser(message);
-    if(parsedMessage.type === 'rapid_wind') (rapid_wind = parsedMessage)
-    if(parsedMessage.type === 'obs_st') (obs_st = parsedMessage)
-  })
+	socket.on('weatherflow-message', (message: any) => {
+		if (message.type === 'rapid_wind') rapid_wind = rapidWind(message.ob);
+		if (message.type === 'obs_st') obs_st = obsSt(message.obs[0]);
+	});
 
-
-  $: { console.log(rapid_wind) }
-  $: { console.log(obs_st) }
+	$: {
+		console.log(rapid_wind);
+	}
+	$: {
+		console.log(obs_st);
+	}
 </script>
 
 <code>{JSON.stringify(rapid_wind, null, 2)}</code>
 <code>{JSON.stringify(obs_st, null, 2)}</code>
 
+{#if obs_st?.airTemperature}
+	<p>Temperature: {celsiusToFarenheit(obs_st.airTemperature)}</p>
+	<ul>
+		<li>Lull: {mpsToMph(obs_st.windLull)}</li>
+		<li>Avg: {mpsToMph(obs_st.windAvg)}</li>
+		<li>Gust: {mpsToMph(obs_st.windGust)}</li>
+	</ul>
+{/if}
+
+{#if rapid_wind?.speed}
+	<p>Wind Speed: {mpsToMph(rapid_wind.speed)}</p>
+{/if}
+
 <style>
-  code {
-    white-space: pre;
-  }
+	code {
+		white-space: pre;
+	}
 </style>

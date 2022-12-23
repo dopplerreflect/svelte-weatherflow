@@ -31,14 +31,14 @@ type WeatherflowInput = {
 	obs: ObsStInput[];
 };
 
-type RapindWindObject = {
+export type RapidWindObject = {
 	type: 'rapid_wind';
 	timestamp: number;
 	speed: number;
 	direction: number;
 };
 
-type ObsStObject = {
+export type ObsStObject = {
 	type: 'obs_st';
 	timestamp: number;
 	windLull: number;
@@ -60,28 +60,23 @@ type ObsStObject = {
 	reportInterval: number;
 };
 
-type NullObject = {
-	type: 'null';
-};
-
-export type WeatherflowData = RapindWindObject | ObsStObject | NullObject;
-
-export function weatherflowParser(object: WeatherflowInput): WeatherflowData {
+export function weatherflowParser(
+	object: WeatherflowInput
+): RapidWindObject | ObsStObject | undefined {
 	switch (object.type) {
 		case 'rapid_wind':
-			return RapidWind(object.ob);
+			return rapidWind(object.ob);
 		case 'obs_st':
 			return obsSt(object.obs[0]);
 	}
-	return { type: 'null' };
 }
 
-function RapidWind(value: RapidWindInput): RapindWindObject {
+export function rapidWind(value: RapidWindInput): RapidWindObject {
 	const [timestamp, speed, direction] = value;
 	return { type: 'rapid_wind', timestamp, speed, direction };
 }
 
-function obsSt(value: ObsStInput): ObsStObject {
+export function obsSt(value: ObsStInput): ObsStObject {
 	const [
 		timestamp,
 		windLull,
