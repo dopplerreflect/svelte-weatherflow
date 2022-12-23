@@ -8,8 +8,8 @@
 		type DecodedRapidWindEvent
 	} from '$lib/weatherflow';
 
-	let rapid_wind: DecodedRapidWindEvent | undefined;
-	let obs_st: DecodedObservationEvent | undefined;
+	let rapid_wind: DecodedRapidWindEvent = decodeRapidWindEvent();
+	let obs_st: DecodedObservationEvent = decodeObservationEvent();
 
 	const socket = io();
 
@@ -21,30 +21,19 @@
 		if (message.type === 'rapid_wind') rapid_wind = decodeRapidWindEvent(message.ob);
 		if (message.type === 'obs_st') obs_st = decodeObservationEvent(message.obs);
 	});
-
-	// $: {
-	// 	console.log(rapid_wind);
-	// }
-	// $: {
-	// 	console.log(obs_st);
-	// }
 </script>
 
 <code>{JSON.stringify(rapid_wind, null, 2)}</code>
 <code>{JSON.stringify(obs_st, null, 2)}</code>
 
-{#if obs_st?.airTemperature}
-	<p>Temperature: {celsiusToFarenheit(obs_st.airTemperature)}</p>
-	<ul>
-		<li>Lull: {mpsToMph(obs_st.windLull)}</li>
-		<li>Avg: {mpsToMph(obs_st.windAvg)}</li>
-		<li>Gust: {mpsToMph(obs_st.windGust)}</li>
-	</ul>
-{/if}
+<p>Temperature: {celsiusToFarenheit(obs_st.airTemperature)}</p>
+<ul>
+	<li>Lull: {mpsToMph(obs_st.windLull)}</li>
+	<li>Avg: {mpsToMph(obs_st.windAvg)}</li>
+	<li>Gust: {mpsToMph(obs_st.windGust)}</li>
+</ul>
 
-{#if rapid_wind?.speed}
-	<p>Wind Speed: {mpsToMph(rapid_wind.speed)}</p>
-{/if}
+<p>Wind Speed: {mpsToMph(rapid_wind.speed)}</p>
 
 <style>
 	code {

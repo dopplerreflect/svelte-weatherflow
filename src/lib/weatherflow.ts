@@ -7,12 +7,16 @@ import type {
 
 export { DecodedObservationEvent, DecodedRapidWindEvent, ObservationEvent, RapidWindEvent };
 
-export function decodeRapidWindEvent(value: RapidWindEvent['ob']): DecodedRapidWindEvent {
+export function decodeRapidWindEvent(
+	value: RapidWindEvent['ob'] = [0, 0, 0]
+): DecodedRapidWindEvent {
 	const [timestamp, speed, direction] = value;
 	return { type: 'rapid_wind', timestamp, speed, direction };
 }
 
-export function decodeObservationEvent(value: ObservationEvent['obs']): DecodedObservationEvent {
+export function decodeObservationEvent(
+	value: ObservationEvent['obs'] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+): DecodedObservationEvent {
 	const [
 		timestamp,
 		windLull,
