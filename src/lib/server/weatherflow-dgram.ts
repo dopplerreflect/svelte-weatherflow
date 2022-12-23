@@ -14,6 +14,7 @@ dgramSocket.bind(50222);
 
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
+	// console.log('dgramSocket got message', message.type);
 	messageEmitter.emit('weatherflow-message', message);
 });
 
@@ -24,7 +25,8 @@ export default function weatherflow(io: Server): void {
 	});
 }
 messageEmitter.on('weatherflow-message', (message) => {
+	// console.log('messageEmmiter weatherflow-message', message.type);
 	sockets.forEach((socket) => {
-		socket.emit('weatherflow-message', message);
+		socket.emit(message.type, message);
 	});
 });
