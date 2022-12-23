@@ -1,29 +1,33 @@
 <script lang="ts">
-	import { obsSt, rapidWind, type ObsStObject, type RapidWindObject } from '$lib/weatherflow';
-
 	import { io } from 'socket.io-client';
 	import { celsiusToFarenheit, mpsToMph } from '$lib/conversions';
+	import {
+		decodeObservationEvent,
+		decodeRapidWindEvent,
+		type DecodedObservationEvent,
+		type DecodedRapidWindEvent
+	} from '$lib/weatherflow';
 
-	let rapid_wind: RapidWindObject | undefined;
-	let obs_st: ObsStObject | undefined;
+	let rapid_wind: DecodedRapidWindEvent | undefined;
+	let obs_st: DecodedObservationEvent | undefined;
 
 	const socket = io();
 
-	socket.on('join', (message: any) => {
+	socket.on('connection', (message: any) => {
 		console.log(message);
 	});
 
 	socket.on('weatherflow-message', (message: any) => {
-		if (message.type === 'rapid_wind') rapid_wind = rapidWind(message.ob);
-		if (message.type === 'obs_st') obs_st = obsSt(message.obs[0]);
+		if (message.type === 'rapid_wind') rapid_wind = decodeRapidWindEvent(message.ob);
+		if (message.type === 'obs_st') obs_st = decodeObservationEvent(message.obs);
 	});
 
-	$: {
-		console.log(rapid_wind);
-	}
-	$: {
-		console.log(obs_st);
-	}
+	// $: {
+	// 	console.log(rapid_wind);
+	// }
+	// $: {
+	// 	console.log(obs_st);
+	// }
 </script>
 
 <code>{JSON.stringify(rapid_wind, null, 2)}</code>

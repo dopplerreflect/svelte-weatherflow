@@ -7,7 +7,7 @@
 		"dev:weatherflow-dgram": "yarn build:weatherflow-dgram --watch",
 		"dev:svelte": "vite dev --host",
 		"build": "vite build",
-		"build:weatherflow-dgram": "esbuild src/lib/server/weatherflow-dgram.ts --bundle --outfile=dist/weatherflow.js --platform=node --format=esm",
+		"build:weatherflow-dgram": "esbuild src/lib/server/weatherflow-dgram.ts --bundle --outfile=dist/weatherflow-dgram.js --platform=node --format=esm",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

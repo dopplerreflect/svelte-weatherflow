@@ -19,7 +19,7 @@ dgramSocket.addListener('message', (buffer) => {
 
 export default function weatherflow(io: Server): void {
 	io.on('connection', (socket) => {
-		socket.emit('join', 'joined');
+		socket.emit('connection', 'websocket connected to server');
 		sockets.push(socket);
 	});
 }

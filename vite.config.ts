@@ -10,7 +10,7 @@ const config: UserConfig = {
 		{
 			name: 'weatherflow',
 			configureServer(server) {
-				import('./dist/weatherflow.js').then(({ default: weatherflow }) => {
+				import('./dist/weatherflow-dgram.js').then(({ default: weatherflow }) => {
 					weatherflow(new Server(server.httpServer as HttpServer));
 				});
 				// const io = new Server(server.httpServer as HttpServer);
