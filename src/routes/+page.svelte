@@ -40,22 +40,27 @@
 <main>
 	<div>
 		<table>
+			<caption>Entries: {rapid_wind.length}</caption>
 			<thead>
 				<th>Timestamp</th>
 				<th>Speed</th>
 				<th>Direction</th>
 			</thead>
-			{#each rapid_wind as rw}
-				<tr>
-					<td>{new Date(rw.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td>
-					<td>{mpsToMph(rw.speed)}</td>
-					<td>{rw.direction}</td>
-				</tr>
-			{/each}
+			<tbody>
+				{#each rapid_wind as rw}
+					<tr>
+						<td>{new Date(rw.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td
+						>
+						<td>{mpsToMph(rw.speed)}</td>
+						<td>{rw.direction}</td>
+					</tr>
+				{/each}
+			</tbody>
 		</table>
 	</div>
 	<div>
 		<table>
+			<caption>Entries: {obs_st.length}</caption>
 			<thead>
 				<th>Timestamp</th>
 				<th>Temp</th>
@@ -63,20 +68,27 @@
 				<th>Avg</th>
 				<th>Gust</th>
 			</thead>
-			{#each obs_st as os}
-				<tr>
-					<td>{new Date(os.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td>
-					<td>{celsiusToFarenheit(os.airTemperature)}</td>
-					<td>{mpsToMph(os.windLull)}</td>
-					<td>{mpsToMph(os.windAvg)}</td>
-					<td>{mpsToMph(os.windGust)}</td>
-				</tr>
-			{/each}
+			<tbody>
+				{#each obs_st as os}
+					<tr>
+						<td>{new Date(os.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td
+						>
+						<td>{celsiusToFarenheit(os.airTemperature)}</td>
+						<td>{mpsToMph(os.windLull)}</td>
+						<td>{mpsToMph(os.windAvg)}</td>
+						<td>{mpsToMph(os.windGust)}</td>
+					</tr>
+				{/each}
+			</tbody>
 		</table>
 	</div>
 </main>
 
 <style>
+	* {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+			'Open Sans', 'Helvetica Neue', sans-serif;
+	}
 	header {
 		height: 1em;
 		display: grid;
