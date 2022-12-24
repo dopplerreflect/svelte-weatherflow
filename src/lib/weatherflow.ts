@@ -15,7 +15,7 @@ const decodedWeatherflowEventCache = {
 	obs_st: [decodeObservationEvent()]
 };
 
-function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
+export function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
 	if (event.timestamp === 0) return;
 	decodedWeatherflowEventCache.rapid_wind.length > 0 &&
 		(decodedWeatherflowEventCache.rapid_wind = decodedWeatherflowEventCache.rapid_wind.filter(
@@ -28,7 +28,7 @@ function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
 	decodedWeatherflowEventCache.rapid_wind.unshift(event);
 }
 
-function cacheDecodedObservationEvent(event: DecodedObservationEvent): void {
+export function cacheDecodedObservationEvent(event: DecodedObservationEvent): void {
 	if (event.timestamp === 0) return;
 	decodedWeatherflowEventCache.obs_st.length > 0 &&
 		(decodedWeatherflowEventCache.obs_st = decodedWeatherflowEventCache.obs_st.filter(
@@ -73,7 +73,6 @@ export function decodeRapidWindEvent(
 		speed,
 		direction
 	};
-	cacheDecodedRapidWindEvent(rapidWindEvent);
 	return rapidWindEvent;
 }
 
@@ -122,6 +121,5 @@ export function decodeObservationEvent(
 		battery,
 		reportInterval
 	};
-	cacheDecodedObservationEvent(obsStEvent);
 	return obsStEvent;
 }

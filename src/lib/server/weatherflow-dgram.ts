@@ -1,4 +1,6 @@
 import {
+	cacheDecodedObservationEvent,
+	cacheDecodedRapidWindEvent,
 	decodeObservationEvent,
 	decodeRapidWindEvent,
 	getObservationCache,
@@ -29,9 +31,11 @@ dgramSocket.addListener('message', (buffer) => {
 	switch (message.type) {
 		case 'rapid_wind':
 			decodedMessage = decodeRapidWindEvent(message.ob);
+			cacheDecodedRapidWindEvent(decodedMessage);
 			break;
 		case 'obs_st':
 			decodedMessage = decodeObservationEvent(message.obs);
+			cacheDecodedObservationEvent(decodedMessage);
 			break;
 		default:
 			decodedMessage = null;
