@@ -13,20 +13,15 @@ import { EventEmitter } from 'node:events';
 import type { Server, Socket } from 'socket.io';
 
 const sockets: Socket[] = [];
-
 class MessageEmitter extends EventEmitter {}
-
 const messageEmitter = new MessageEmitter();
-
 const dgramSocket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
-
 dgramSocket.bind(50222);
 
 type DecodedWeatherflowMessage = DecodedRapidWindEvent | DecodedObservationEvent;
 
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
-
 	let decodedMessage: DecodedWeatherflowMessage | null;
 	switch (message.type) {
 		case 'rapid_wind':

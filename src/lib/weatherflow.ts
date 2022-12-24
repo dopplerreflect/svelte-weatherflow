@@ -5,7 +5,7 @@ import type {
 	RapidWindEvent
 } from './weatherflow.d';
 
-export { DecodedObservationEvent, DecodedRapidWindEvent, ObservationEvent, RapidWindEvent };
+export { DecodedObservationEvent, DecodedRapidWindEvent };
 
 export const RAPID_WIND_CACHE_SIZE = 600; // 30 minutes of 3-second intervals
 export const OBSERVATION_CACHE_SIZE = 30; // 30 minutes of 1-second intervals
@@ -30,24 +30,14 @@ export function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
 
 export function cacheDecodedObservationEvent(event: DecodedObservationEvent): void {
 	if (event.timestamp === 0) return;
+	const eventMap = new Map();
+	decodedWeatherflowEventCache.obs_st.forEach((e) => eventMap.set(e.timestamp, e));
+	decodedWeatherflowEventCache.obs_st = [...eventMap.values()];
+
 	decodedWeatherflowEventCache.obs_st.length > 0 &&
 		(decodedWeatherflowEventCache.obs_st = decodedWeatherflowEventCache.obs_st.filter(
 			(e) => e.timestamp !== 0
 		)).sort((a, b) => b.timestamp - a.timestamp);
-
-	// convert to array of strings that can be passed into Set() in order to remove
-	// duplicates once differing battery values are not a factor
-	const arrayOfJSONStrings = decodedWeatherflowEventCache.obs_st
-		.map((o) => {
-			// differring battery values per timestamp caused apparent dupes. don't need it.
-			delete o.battery;
-			return o;
-		})
-		.map((o) => JSON.stringify(o));
-
-	decodedWeatherflowEventCache.obs_st = JSON.parse(`[
-		${[...new Set(arrayOfJSONStrings)]}
-	]`);
 
 	decodedWeatherflowEventCache.obs_st.length === OBSERVATION_CACHE_SIZE &&
 		decodedWeatherflowEventCache.obs_st.pop();
@@ -55,17 +45,15 @@ export function cacheDecodedObservationEvent(event: DecodedObservationEvent): vo
 	decodedWeatherflowEventCache.obs_st.unshift(event);
 }
 
-export function getRapidWindCache(): DecodedRapidWindEvent[] {
+export function getRapidWindCache() {
 	return decodedWeatherflowEventCache.rapid_wind;
 }
 
-export function getObservationCache(): DecodedObservationEvent[] {
+export function getObservationCache() {
 	return decodedWeatherflowEventCache.obs_st;
 }
 
-export function decodeRapidWindEvent(
-	value: RapidWindEvent['ob'] = [0, 0, 0]
-): DecodedRapidWindEvent {
+export function decodeRapidWindEvent(value: RapidWindEvent['ob'] = [0, 0, 0]) {
 	const [timestamp, speed, direction] = value;
 	let rapidWindEvent: DecodedRapidWindEvent = {
 		type: 'rapid_wind',
@@ -78,7 +66,7 @@ export function decodeRapidWindEvent(
 
 export function decodeObservationEvent(
 	value: ObservationEvent['obs'] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-): DecodedObservationEvent {
+) {
 	const [
 		timestamp,
 		windLull,
