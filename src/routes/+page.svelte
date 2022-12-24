@@ -14,21 +14,23 @@
 
 	let rapid_wind: DecodedRapidWindEvent = decodeRapidWindEvent();
 	let obs_st: DecodedObservationEvent = decodeObservationEvent();
-	let rapidWindCache = getRapidWindCache();
-	let observationCache = getObservationCache();
+	// let rapidWindCache = getRapidWindCache();
+	// let observationCache = getObservationCache();
 
 	const socket = io();
 
 	socket.on('connection', (message: any) => {
 		console.log(message);
 	});
-	socket.on('rapid_wind', (message: RapidWindEvent) => {
-		rapid_wind = decodeRapidWindEvent(message.ob);
-		rapidWindCache = getRapidWindCache();
+	socket.on('rapid_wind', (message: DecodedRapidWindEvent) => {
+		// rapid_wind = decodeRapidWindEvent(message.ob);
+		rapid_wind = message;
+		// rapidWindCache = getRapidWindCache();
 	});
-	socket.on('obs_st', (message: ObservationEvent) => {
-		obs_st = decodeObservationEvent(message.obs);
-		observationCache = getObservationCache();
+	socket.on('obs_st', (message: DecodedObservationEvent) => {
+		// obs_st = decodeObservationEvent(message.obs);
+		obs_st = message;
+		// observationCache = getObservationCache();
 	});
 </script>
 
@@ -42,11 +44,8 @@
 <p>Wind Speed: {mpsToMph(rapid_wind.speed)}</p>
 <p>Wind Direction: {rapid_wind.direction}</p>
 
-<code>{JSON.stringify(rapidWindCache, null, 2)}</code>
-<code>{JSON.stringify(observationCache, null, 2)}</code>
-
 <style>
-	code {
+	/* code {
 		white-space: pre;
-	}
+	} */
 </style>

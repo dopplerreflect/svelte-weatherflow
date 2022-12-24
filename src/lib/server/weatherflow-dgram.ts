@@ -1,3 +1,9 @@
+import {
+	decodeObservationEvent,
+	decodeRapidWindEvent,
+	type DecodedObservationEvent,
+	type DecodedRapidWindEvent
+} from '$lib/weatherflow';
 import dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 import type { Server, Socket } from 'socket.io';
@@ -15,7 +21,21 @@ dgramSocket.bind(50222);
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
 	// console.log('dgramSocket got message', message.type);
-	messageEmitter.emit('weatherflow-message', message);
+
+	// TODO: put stuff in fixed-length arrays and emit the arrays instead
+
+	let decodedMessage: DecodedRapidWindEvent | DecodedObservationEvent | null;
+	switch (message.type) {
+		case 'rapid_wind':
+			decodedMessage = decodeRapidWindEvent(message.ob);
+			break;
+		case 'obs_st':
+			decodedMessage = decodeObservationEvent(message.obs);
+			break;
+		default:
+			decodedMessage = null;
+	}
+	decodedMessage && messageEmitter.emit('weatherflow-message', decodedMessage);
 });
 
 export default function weatherflow(io: Server): void {
@@ -24,8 +44,9 @@ export default function weatherflow(io: Server): void {
 		sockets.push(socket);
 	});
 }
+
 messageEmitter.on('weatherflow-message', (message) => {
-	// console.log('messageEmmiter weatherflow-message', message.type);
+	console.log('messageEmmiter weatherflow-message', message.type);
 	sockets.forEach((socket) => {
 		socket.emit(message.type, message);
 	});
