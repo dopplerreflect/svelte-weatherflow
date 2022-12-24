@@ -7,30 +7,43 @@ import type {
 
 export { DecodedObservationEvent, DecodedRapidWindEvent, ObservationEvent, RapidWindEvent };
 
-const RAPID_WIND_CACHE_SIZE = 3;
-const OBSERVATION_CACHE_SIZE = 3;
+export const RAPID_WIND_CACHE_SIZE = 3;
+export const OBSERVATION_CACHE_SIZE = 3;
 
-let rapidWindCache: DecodedRapidWindEvent[] = [];
-let observationCache: DecodedObservationEvent[] = [];
+type DecodedWeatherflowEventCache = {
+	rapid_wind: DecodedRapidWindEvent[];
+	obs_st: DecodedObservationEvent[];
+};
+
+const decodedWeatherflowEventCache: DecodedWeatherflowEventCache = {
+	rapid_wind: [decodeRapidWindEvent()],
+	obs_st: [decodeObservationEvent()]
+};
 
 function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
 	if (event.timestamp === 0) return;
-	rapidWindCache.length === RAPID_WIND_CACHE_SIZE && rapidWindCache.shift();
-	rapidWindCache.push(event);
+	decodedWeatherflowEventCache.rapid_wind.length === RAPID_WIND_CACHE_SIZE &&
+		decodedWeatherflowEventCache.rapid_wind.pop();
+	decodedWeatherflowEventCache.rapid_wind.unshift(event);
 }
 
 function cacheDecodedObservationEvent(event: DecodedObservationEvent): void {
 	if (event.timestamp === 0) return;
-	observationCache.length === OBSERVATION_CACHE_SIZE && observationCache.shift();
-	observationCache.push(event);
+	decodedWeatherflowEventCache.obs_st.length === 2 &&
+		(decodedWeatherflowEventCache.obs_st = decodedWeatherflowEventCache.obs_st.filter(
+			(e) => e.timestamp !== 0
+		));
+	decodedWeatherflowEventCache.obs_st.length === RAPID_WIND_CACHE_SIZE &&
+		decodedWeatherflowEventCache.obs_st.pop();
+	decodedWeatherflowEventCache.obs_st.unshift(event);
 }
 
 export function getRapidWindCache(): DecodedRapidWindEvent[] {
-	return rapidWindCache;
+	return decodedWeatherflowEventCache.rapid_wind;
 }
 
 export function getObservationCache(): DecodedObservationEvent[] {
-	return observationCache;
+	return decodedWeatherflowEventCache.obs_st;
 }
 
 export function decodeRapidWindEvent(

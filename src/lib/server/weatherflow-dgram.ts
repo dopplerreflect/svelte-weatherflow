@@ -1,6 +1,8 @@
 import {
 	decodeObservationEvent,
 	decodeRapidWindEvent,
+	getObservationCache,
+	getRapidWindCache,
 	type DecodedObservationEvent,
 	type DecodedRapidWindEvent
 } from '$lib/weatherflow';
@@ -20,9 +22,6 @@ dgramSocket.bind(50222);
 
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
-	// console.log('dgramSocket got message', message.type);
-
-	// TODO: put stuff in fixed-length arrays and emit the arrays instead
 
 	let decodedMessage: DecodedRapidWindEvent | DecodedObservationEvent | null;
 	switch (message.type) {
@@ -38,16 +37,31 @@ dgramSocket.addListener('message', (buffer) => {
 	decodedMessage && messageEmitter.emit('weatherflow-message', decodedMessage);
 });
 
-export default function weatherflow(io: Server): void {
-	io.on('connection', (socket) => {
-		socket.emit('connection', 'websocket connected to server');
-		sockets.push(socket);
-	});
+messageEmitter.on('weatherflow-message', (message) => {
+	let messageCache: DecodedRapidWindEvent[] | DecodedObservationEvent[] | null = [];
+	switch (message.type) {
+		case 'rapid_wind':
+			messageCache = getRapidWindCache();
+			break;
+		case 'obs_st':
+			messageCache = getObservationCache();
+			break;
+		default:
+			messageCache = null;
+	}
+	emitMessageToSockets(message.type, messageCache);
+});
+
+function emitMessageToSockets(messageType: string, message: any): void {
+	sockets.forEach((socket) => socket.emit(messageType, message));
 }
 
-messageEmitter.on('weatherflow-message', (message) => {
-	console.log('messageEmmiter weatherflow-message', message.type);
-	sockets.forEach((socket) => {
-		socket.emit(message.type, message);
+export default function weatherflow(io: Server): void {
+	io.on('connection', (socket) => {
+		console.log('client connected');
+		socket.emit('connection', 'websocket connected to server');
+		sockets.push(socket);
+		emitMessageToSockets('rapid_wind', getRapidWindCache());
+		emitMessageToSockets('obs_st', getObservationCache());
 	});
-});
+}
