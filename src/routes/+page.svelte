@@ -39,11 +39,15 @@
 
 <main>
 	<div>
-		<!-- <code>{JSON.stringify(rapid_wind, null, 2)}</code> -->
 		<table>
+			<thead>
+				<th>Timestamp</th>
+				<th>Speed</th>
+				<th>Direction</th>
+			</thead>
 			{#each rapid_wind as rw}
 				<tr>
-					<td>{rw.timestamp}</td>
+					<td>{new Date(rw.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td>
 					<td>{mpsToMph(rw.speed)}</td>
 					<td>{rw.direction}</td>
 				</tr>
@@ -51,7 +55,6 @@
 		</table>
 	</div>
 	<div>
-		<!-- <code>{JSON.stringify(obs_st, null, 2)}</code> -->
 		<table>
 			<thead>
 				<th>Timestamp</th>
@@ -62,7 +65,7 @@
 			</thead>
 			{#each obs_st as os}
 				<tr>
-					<td>{os.timestamp}</td>
+					<td>{new Date(os.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td>
 					<td>{celsiusToFarenheit(os.airTemperature)}</td>
 					<td>{mpsToMph(os.windLull)}</td>
 					<td>{mpsToMph(os.windAvg)}</td>
@@ -74,9 +77,6 @@
 </main>
 
 <style>
-	code {
-		white-space: pre;
-	}
 	header {
 		height: 1em;
 		display: grid;
@@ -99,8 +99,6 @@
 		width: 100%;
 	}
 	td {
-		/* display: flex; */
-		/* flex-direction: column; */
 		text-align: center;
 	}
 </style>
