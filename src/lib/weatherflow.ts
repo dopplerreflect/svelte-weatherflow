@@ -7,8 +7,8 @@ import type {
 
 export { DecodedObservationEvent, DecodedRapidWindEvent, ObservationEvent, RapidWindEvent };
 
-export const RAPID_WIND_CACHE_SIZE = 3;
-export const OBSERVATION_CACHE_SIZE = 3;
+export const RAPID_WIND_CACHE_SIZE = 600; // 30 minutes of 3-second intervals
+export const OBSERVATION_CACHE_SIZE = 30; // 30 minutes of 1-second intervals
 
 type DecodedWeatherflowEventCache = {
 	rapid_wind: DecodedRapidWindEvent[];

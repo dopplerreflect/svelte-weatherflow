@@ -20,10 +20,12 @@ const dgramSocket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
 dgramSocket.bind(50222);
 
+type DecodedWeatherflowMessage = DecodedRapidWindEvent | DecodedObservationEvent;
+
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
 
-	let decodedMessage: DecodedRapidWindEvent | DecodedObservationEvent | null;
+	let decodedMessage: DecodedWeatherflowMessage | null;
 	switch (message.type) {
 		case 'rapid_wind':
 			decodedMessage = decodeRapidWindEvent(message.ob);
@@ -38,7 +40,7 @@ dgramSocket.addListener('message', (buffer) => {
 });
 
 messageEmitter.on('weatherflow-message', (message) => {
-	let messageCache: DecodedRapidWindEvent[] | DecodedObservationEvent[] | null = [];
+	let messageCache: DecodedWeatherflowMessage[] | null = [];
 	switch (message.type) {
 		case 'rapid_wind':
 			messageCache = getRapidWindCache();
