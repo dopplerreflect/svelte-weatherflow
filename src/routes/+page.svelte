@@ -29,9 +29,9 @@
 </script>
 
 <header>
-	<div>Temp: {celsiusToFarenheit(lastObsSt.airTemperature)}</div>
 	<div>Wind Speed: {mpsToMph(lastRapidWind.speed)}</div>
 	<div>Direction: {lastRapidWind.direction}</div>
+	<div>Temp: {celsiusToFarenheit(lastObsSt.airTemperature)}</div>
 	<div>Lull: {mpsToMph(lastObsSt.windLull)}</div>
 	<div>Avg: {mpsToMph(lastObsSt.windAvg)}</div>
 	<div>Gust: {mpsToMph(lastObsSt.windGust)}</div>

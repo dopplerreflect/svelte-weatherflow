@@ -10,31 +10,48 @@ export { DecodedObservationEvent, DecodedRapidWindEvent, ObservationEvent, Rapid
 export const RAPID_WIND_CACHE_SIZE = 600; // 30 minutes of 3-second intervals
 export const OBSERVATION_CACHE_SIZE = 30; // 30 minutes of 1-second intervals
 
-type DecodedWeatherflowEventCache = {
-	rapid_wind: DecodedRapidWindEvent[];
-	obs_st: DecodedObservationEvent[];
-};
-
-const decodedWeatherflowEventCache: DecodedWeatherflowEventCache = {
+const decodedWeatherflowEventCache = {
 	rapid_wind: [decodeRapidWindEvent()],
 	obs_st: [decodeObservationEvent()]
 };
 
 function cacheDecodedRapidWindEvent(event: DecodedRapidWindEvent): void {
 	if (event.timestamp === 0) return;
+	decodedWeatherflowEventCache.rapid_wind.length > 0 &&
+		(decodedWeatherflowEventCache.rapid_wind = decodedWeatherflowEventCache.rapid_wind.filter(
+			(e) => e.timestamp !== 0
+		)).sort((a, b) => b.timestamp - a.timestamp);
+
 	decodedWeatherflowEventCache.rapid_wind.length === RAPID_WIND_CACHE_SIZE &&
 		decodedWeatherflowEventCache.rapid_wind.pop();
+
 	decodedWeatherflowEventCache.rapid_wind.unshift(event);
 }
 
 function cacheDecodedObservationEvent(event: DecodedObservationEvent): void {
 	if (event.timestamp === 0) return;
-	decodedWeatherflowEventCache.obs_st.length === 2 &&
+	decodedWeatherflowEventCache.obs_st.length > 0 &&
 		(decodedWeatherflowEventCache.obs_st = decodedWeatherflowEventCache.obs_st.filter(
 			(e) => e.timestamp !== 0
-		));
-	decodedWeatherflowEventCache.obs_st.length === RAPID_WIND_CACHE_SIZE &&
+		)).sort((a, b) => b.timestamp - a.timestamp);
+
+	// convert to array of strings that can be passed into Set() in order to remove
+	// duplicates once differing battery values are not a factor
+	const arrayOfJSONStrings = decodedWeatherflowEventCache.obs_st
+		.map((o) => {
+			// differring battery values per timestamp caused apparent dupes. don't need it.
+			delete o.battery;
+			return o;
+		})
+		.map((o) => JSON.stringify(o));
+
+	decodedWeatherflowEventCache.obs_st = JSON.parse(`[
+		${[...new Set(arrayOfJSONStrings)]}
+	]`);
+
+	decodedWeatherflowEventCache.obs_st.length === OBSERVATION_CACHE_SIZE &&
 		decodedWeatherflowEventCache.obs_st.pop();
+
 	decodedWeatherflowEventCache.obs_st.unshift(event);
 }
 

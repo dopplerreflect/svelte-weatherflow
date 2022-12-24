@@ -105,6 +105,6 @@ export type DecodedObservationEvent = {
 	precipitationType: number;
 	lightningStrikeAvgDistance: number;
 	lightningStrikeCount: number;
-	battery: number;
+	battery?: number; // removing due to it causing dupe in observations
 	reportInterval: number;
 };
