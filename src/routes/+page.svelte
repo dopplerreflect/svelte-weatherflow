@@ -13,12 +13,15 @@
 				<th>Direction</th>
 			</thead>
 			<tbody>
-				{#each $rapid_wind as rw}
+				{#each $rapid_wind as rapid_wind}
 					<tr>
-						<td>{new Date(rw.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td
+						<td
+							>{new Date(rapid_wind.timestamp * 1000).toLocaleString('en-US', {
+								timeStyle: 'medium'
+							})}</td
 						>
-						<td>{mpsToMph(rw.speed)}</td>
-						<td>{rw.direction}</td>
+						<td>{mpsToMph(rapid_wind.speed)}</td>
+						<td>{rapid_wind.direction}</td>
 					</tr>
 				{/each}
 			</tbody>
@@ -28,21 +31,26 @@
 		<table>
 			<caption>Entries: {$obs_st.length}</caption>
 			<thead>
-				<th>Timestamp</th>
+				<th>Time</th>
+				<th>timestamp</th>
 				<th>Temp</th>
 				<th>Lull</th>
 				<th>Avg</th>
 				<th>Gust</th>
 			</thead>
 			<tbody>
-				{#each $obs_st as os}
+				{#each $obs_st as obs_st}
 					<tr>
-						<td>{new Date(os.timestamp * 1000).toLocaleString('en-US', { timeStyle: 'medium' })}</td
+						<td
+							>{new Date(obs_st.timestamp * 1000).toLocaleString('en-US', {
+								timeStyle: 'medium'
+							})}</td
 						>
-						<td>{celsiusToFarenheit(os.airTemperature)}</td>
-						<td>{mpsToMph(os.windLull)}</td>
-						<td>{mpsToMph(os.windAvg)}</td>
-						<td>{mpsToMph(os.windGust)}</td>
+						<td>{obs_st.timestamp}</td>
+						<td>{celsiusToFarenheit(obs_st.airTemperature)}</td>
+						<td>{mpsToMph(obs_st.windLull)}</td>
+						<td>{mpsToMph(obs_st.windAvg)}</td>
+						<td>{mpsToMph(obs_st.windGust)}</td>
 					</tr>
 				{/each}
 			</tbody>
