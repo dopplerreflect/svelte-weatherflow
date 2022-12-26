@@ -35,10 +35,27 @@
 </script>
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-105 -105 210 210">
+	<defs>
+		<mask id="ringMask">
+			<path d="M-100,-100H100V100H-100Z" fill="white" />
+			<path d="M0,-6H100V6H0Z" fill="black" />
+		</mask>
+	</defs>
 	<circle cx={0} cy={0} r={100} fill="hsl(240, 100%, 10%)" stroke="white" />
 	<g id="ringRadii">
 		{#each ringRadii as radius}
+			<text
+				font-size="12px"
+				y={1}
+				x={(100 / maxSpeed) * radius}
+				fill={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
+				text-anchor="middle"
+				alignment-baseline="middle"
+			>
+				{radius}
+			</text>
 			<circle
+				mask="url(#ringMask)"
 				r={(100 / maxSpeed) * radius}
 				fill="none"
 				stroke={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
@@ -51,7 +68,9 @@
 				cx={pc(rw.direction, mpsToMph(rw.speed)).x || 0}
 				cy={pc(rw.direction, mpsToMph(rw.speed)).y || 0}
 				r={1}
-				fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, 1)`}
+				fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
+					1 - (1 / $rapid_wind.length) * i
+				})`}
 			/>
 		{/each}
 	</g>
