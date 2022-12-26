@@ -24,7 +24,7 @@
 	$: maxSpeed = Math.max(...$rapid_wind.map((e) => mpsToMph(e.speed)));
 	$: ringRadii = Array.from({ length: Math.ceil(maxSpeed) })
 		.map((_, i) => {
-			const div = maxSpeed > 5 ? 5 : 1;
+			const div = maxSpeed > 5.9 ? 5 : 1;
 			if (i % div === 0) {
 				return i;
 			}
