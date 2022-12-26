@@ -8,7 +8,6 @@
 		<table>
 			<caption>Entries: {$rapid_wind.length}</caption>
 			<thead>
-				<th>i</th>
 				<th>Time</th>
 				<th>Speed</th>
 				<th>Direction</th>
@@ -16,7 +15,6 @@
 			<tbody>
 				{#each $rapid_wind as rapid_wind, i}
 					<tr>
-						<td>{i}</td>
 						<td
 							>{new Date(rapid_wind.timestamp * 1000).toLocaleString('en-US', {
 								timeStyle: 'medium'
@@ -34,7 +32,6 @@
 			<caption>Entries: {$obs_st.length}</caption>
 			<thead>
 				<th>Time</th>
-				<th>timestamp</th>
 				<th>Temp</th>
 				<th>Lull</th>
 				<th>Avg</th>
@@ -48,7 +45,6 @@
 								timeStyle: 'medium'
 							})}</td
 						>
-						<td>{obs_st.timestamp}</td>
 						<td>{celsiusToFarenheit(obs_st.airTemperature)}</td>
 						<td>{mpsToMph(obs_st.windLull)}</td>
 						<td>{mpsToMph(obs_st.windAvg)}</td>
