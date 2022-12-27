@@ -1,17 +1,33 @@
+export enum WFType {
+	Evt_Precip = 'evt_precip',
+	Evt_Strike = 'evt_strike',
+	Rapid_Wind = 'rapid_wind',
+	Obs_St = 'obs_st',
+	Hub_Status = 'hub_status',
+	Device_Status = 'device_status'
+}
+
 interface WeatherflowEvent {
+	type:
+		| WFType.Evt_Precip
+		| WFType.Evt_Strike
+		| WFType.Rapid_Wind
+		| WFType.Obs_St
+		| WFType.Hub_Status
+		| WFType.Device_Status;
 	serial_number: string;
 	hub_sn: string;
 }
 
 export interface RainStartEvent extends WeatherflowEvent {
-	type: 'evt_precip';
+	type: WFType.Evt_Precip;
 	evt: [
 		number // timestamp
 	];
 }
 
 export interface LightningStrikeEvent extends WeatherflowEvent {
-	type: 'evt_strike';
+	type: WFType.Evt_Strike;
 	evt: [
 		number, // timestamp
 		number, // distance
@@ -20,7 +36,7 @@ export interface LightningStrikeEvent extends WeatherflowEvent {
 }
 
 export interface RapidWindEvent extends WeatherflowEvent {
-	type: 'rapid_wind';
+	type: WFType.Rapid_Wind;
 	ob: [
 		number, // timestamp
 		number, // windSpeed
@@ -50,12 +66,12 @@ type ObservationObs = [
 ];
 
 export interface ObservationEvent extends WeatherflowEvent {
-	type: 'obs_st';
+	type: WFType.Obs_St;
 	obs: ObservationObs[];
 }
 
 export interface DeviceStatusEvent extends WeatherflowEvent {
-	type: 'device_status';
+	type: WFType.Device_Status;
 	timestamp: number;
 	uptime: number;
 	voltage: number;
@@ -67,8 +83,8 @@ export interface DeviceStatusEvent extends WeatherflowEvent {
 }
 
 export interface HubStatusEvent {
+	type: WFType.Hub_Status;
 	serial_number: string;
-	type: 'hub_status';
 	firmware_revision: string;
 	uptime: number;
 	rssi: number;
@@ -81,14 +97,14 @@ export interface HubStatusEvent {
 }
 
 export type DecodedRapidWindEvent = {
-	type: 'rapid_wind';
+	type: WFType.Rapid_Wind;
 	timestamp: number;
 	speed: number;
 	direction: number;
 };
 
 export type DecodedObservationEvent = {
-	type: 'obs_st';
+	type: WFType.Obs_St;
 	timestamp: number;
 	windLull: number;
 	windAvg: number;

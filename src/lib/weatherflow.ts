@@ -1,8 +1,9 @@
-import type {
-	DecodedObservationEvent,
-	DecodedRapidWindEvent,
-	ObservationEvent,
-	RapidWindEvent
+import {
+	WFType,
+	type DecodedObservationEvent,
+	type DecodedRapidWindEvent,
+	type ObservationEvent,
+	type RapidWindEvent
 } from './weatherflow.d';
 
 export { DecodedObservationEvent, DecodedRapidWindEvent };
@@ -53,10 +54,12 @@ export function getObservationCache() {
 	return decodedWeatherflowEventCache.obs_st;
 }
 
-export function decodeRapidWindEvent(value: RapidWindEvent['ob'] = [0, 0, 0]) {
+export function decodeRapidWindEvent(
+	value: RapidWindEvent['ob'] = [0, 0, 0]
+): DecodedRapidWindEvent {
 	const [timestamp, speed, direction] = value;
 	let rapidWindEvent: DecodedRapidWindEvent = {
-		type: 'rapid_wind',
+		type: WFType.Rapid_Wind,
 		timestamp,
 		speed,
 		direction
@@ -89,7 +92,7 @@ export function decodeObservationEvent(
 	] = value[0];
 
 	let obsStEvent: DecodedObservationEvent = {
-		type: 'obs_st',
+		type: WFType.Obs_St,
 		timestamp,
 		windLull,
 		windAvg,

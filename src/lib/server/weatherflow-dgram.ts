@@ -4,9 +4,7 @@ import {
 	decodeObservationEvent,
 	decodeRapidWindEvent,
 	getObservationCache,
-	getRapidWindCache,
-	type DecodedObservationEvent,
-	type DecodedRapidWindEvent
+	getRapidWindCache
 } from '$lib/weatherflow';
 import dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
@@ -18,11 +16,9 @@ const messageEmitter = new MessageEmitter();
 const dgramSocket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 dgramSocket.bind(50222);
 
-type DecodedWeatherflowMessage = DecodedRapidWindEvent | DecodedObservationEvent;
-
 dgramSocket.addListener('message', (buffer) => {
 	const message = JSON.parse(buffer.toString());
-	let decodedMessage: DecodedWeatherflowMessage | null;
+	let decodedMessage;
 	switch (message.type) {
 		case 'rapid_wind':
 			decodedMessage = decodeRapidWindEvent(message.ob);
@@ -39,7 +35,7 @@ dgramSocket.addListener('message', (buffer) => {
 });
 
 messageEmitter.on('weatherflow-message', (message) => {
-	let messageCache: DecodedWeatherflowMessage[] | null = [];
+	let messageCache;
 	switch (message.type) {
 		case 'rapid_wind':
 			messageCache = getRapidWindCache();
