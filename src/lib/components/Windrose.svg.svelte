@@ -38,7 +38,7 @@
 	<defs>
 		<mask id="ringMask">
 			<path d="M-100,-100H100V100H-100Z" fill="white" />
-			<path d="M0,-6H100V6H0Z" fill="black" />
+			<path d="M0,-3H100V3.5H0Z" fill="black" />
 		</mask>
 		<filter id="blur">
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.75" />
@@ -49,7 +49,7 @@
 	<g id="ringRadii">
 		{#each ringRadii as radius}
 			<text
-				font-size="12px"
+				font-size="6px"
 				y={1}
 				x={(100 / maxSpeed) * radius}
 				fill={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
