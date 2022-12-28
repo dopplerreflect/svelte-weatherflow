@@ -22,3 +22,5 @@ socket.on('rapid_wind', (message: DecodedRapidWindEvent[]) => {
 socket.on('obs_st', (message: DecodedObservationEvent[]) => {
 	obs_st.set(message);
 });
+
+export const rapidWindReportLimit = writable(30);

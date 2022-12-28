@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { rapid_wind } from '$lib/store';
+	import { rapid_wind, rapidWindReportLimit } from '$lib/store';
 	import { mpsToMph } from '$lib/conversions';
 
 	const pc = (direction: number, speed: number) => {
@@ -21,7 +21,9 @@
 		return 230 - mph * 12.5;
 	};
 
-	$: maxSpeed = Math.max(...$rapid_wind.map((e) => mpsToMph(e.speed)));
+	$: maxSpeed = Math.max(
+		...$rapid_wind.slice(0, $rapidWindReportLimit * 20).map((e) => mpsToMph(e.speed))
+	);
 	$: ringRadii = Array.from({ length: Math.ceil(maxSpeed) })
 		.map((_, i) => {
 			const div = maxSpeed > 9.9 ? 5 : 1;
@@ -40,17 +42,43 @@
 			<path d="M-100,-100H100V100H-100Z" fill="white" />
 			<path d="M0,-3H100V3.5H0Z" fill="black" />
 		</mask>
+		<mask id="crossRingMask">
+			<path d="M-1005,-1005H1005V1005H-1005Z" fill="white" />
+			<path d="M-105-3H-3V-105H3V3H105V-3H3V105H-3V3H-105Z" fill="black" />
+		</mask>
+
 		<filter id="blur">
 			<feGaussianBlur in="SourceGraphic" stdDeviation="0.75" />
 		</filter>
 	</defs>
-	<circle cx={0} cy={0} r={100} fill="hsl(240, 100%, 10%)" stroke="white" filter="url(#blur)" />
-	<circle cx={0} cy={0} r={100} fill="none" stroke="white" stroke-width="0.25" />
+	<circle cx={0} cy={0} r={100} fill="hsl(240, 100%, 10%)" />
+	<circle
+		cx={0}
+		cy={0}
+		r={100}
+		fill="none"
+		stroke="white"
+		filter="url(#blur)"
+		mask="url(#crossRingMask)"
+	/>
+	<text class="cardinal" x={0} y={-99} alignment-baseline="middle" text-anchor="middle">N</text>
+	<text class="cardinal" x={100} y={0.75} alignment-baseline="middle" text-anchor="middle">E</text>
+	<text class="cardinal" x={0} y={101} alignment-baseline="middle" text-anchor="middle">S</text>
+	<text class="cardinal" x={-100} y={0.75} alignment-baseline="middle" text-anchor="middle">W</text>
+	<circle
+		cx={0}
+		cy={0}
+		r={100}
+		fill="none"
+		stroke="white"
+		stroke-width="0.25"
+		mask="url(#crossRingMask)"
+	/>
 	<g id="ringRadii">
 		{#each ringRadii as radius}
 			<text
 				font-size="6px"
-				y={1}
+				y={0.75}
 				x={(100 / maxSpeed) * radius}
 				fill={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
 				text-anchor="middle"
@@ -75,13 +103,13 @@
 		{/each}
 	</g>
 	<g id="windDots">
-		{#each $rapid_wind as rw, i}
+		{#each $rapid_wind.slice(0, $rapidWindReportLimit * 20) as rw, i}
 			<circle
 				cx={pc(rw.direction, mpsToMph(rw.speed)).x || 0}
 				cy={pc(rw.direction, mpsToMph(rw.speed)).y || 0}
 				r={1}
 				fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
-					1 - (1 / $rapid_wind.length) * i
+					1 - (1 / $rapid_wind.slice(0, $rapidWindReportLimit * 20).length) * i
 				})`}
 			/>
 		{/each}
@@ -109,8 +137,23 @@
 		stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
 		stroke-width={0.5}
 	/>
-	<!-- <text text-anchor="middle" dominant-baseline="middle" fill="white">
-    {mpsToMph($rapid_wind[0].speed)}
+	<!-- <text
+		text-anchor="middle"
+		dominant-baseline="middle"
+		fill="none"
+		stroke="hsl(30,100%,50%)"
+		filter="url(#blur)"
+	>
+		{mpsToMph($rapid_wind[0].speed)}
+	</text>
+	<text
+		text-anchor="middle"
+		dominant-baseline="middle"
+		fill="black"
+		stroke="hsl(45, 100%, 50%)"
+		stroke-width="0.25"
+	>
+		{mpsToMph($rapid_wind[0].speed)}
 	</text> -->
 	<!-- <text x={-100} y={100} fill="white">{maxSpeed}</text> -->
 </svg>
@@ -119,5 +162,9 @@
 	svg {
 		height: calc(100vh - 1em);
 		/* margin: 1em; */
+	}
+	text.cardinal {
+		fill: white;
+		font-size: 6px;
 	}
 </style>
