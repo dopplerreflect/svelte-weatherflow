@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { rapid_wind, rapidWindReportLimit } from '$lib/store';
+	import { rapid_wind, rapidWindReportLimit, windroseRotateDegrees } from '$lib/store';
 	import { mpsToMph } from '$lib/conversions';
 
 	const pc = (direction: number, speed: number) => {
@@ -52,91 +52,122 @@
 		</filter>
 	</defs>
 	<circle cx={0} cy={0} r={100} fill="hsl(240, 100%, 10%)" />
-	<circle
-		cx={0}
-		cy={0}
-		r={100}
-		fill="none"
-		stroke="white"
-		filter="url(#blur)"
-		mask="url(#crossRingMask)"
-	/>
-	<text class="cardinal" x={0} y={-99} alignment-baseline="middle" text-anchor="middle">N</text>
-	<text class="cardinal" x={100} y={0.75} alignment-baseline="middle" text-anchor="middle">E</text>
-	<text class="cardinal" x={0} y={101} alignment-baseline="middle" text-anchor="middle">S</text>
-	<text class="cardinal" x={-100} y={0.75} alignment-baseline="middle" text-anchor="middle">W</text>
-	<circle
-		cx={0}
-		cy={0}
-		r={100}
-		fill="none"
-		stroke="white"
-		stroke-width="0.25"
-		mask="url(#crossRingMask)"
-	/>
-	<g id="ringRadii">
-		{#each ringRadii as radius}
-			<text
-				font-size="6px"
-				y={0.75}
-				x={(100 / maxSpeed) * radius}
-				fill={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
-				text-anchor="middle"
-				alignment-baseline="middle"
-			>
-				{radius}
-			</text>
-			<circle
-				filter="url(#blur)"
-				mask="url(#ringMask)"
-				r={(100 / maxSpeed) * radius}
-				fill="none"
-				stroke={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
-			/>
-			<circle
-				mask="url(#ringMask)"
-				r={(100 / maxSpeed) * radius}
-				fill="none"
-				stroke={`hsl(${hueForSpeed(radius) - 30}, 100%, 50%)`}
-				stroke-width="0.25"
-			/>
-		{/each}
+	<g id="windrose" transform={`rotate(${$windroseRotateDegrees}, 0, 0)`}>
+		<circle
+			cx={0}
+			cy={0}
+			r={100}
+			fill="none"
+			stroke="white"
+			filter="url(#blur)"
+			mask="url(#crossRingMask)"
+		/>
+		<text
+			class="cardinal"
+			transform={`rotate(${-$windroseRotateDegrees}, ${0}, ${-99})`}
+			x={0}
+			y={-99}
+			alignment-baseline="middle"
+			text-anchor="middle">N</text
+		>
+		<text
+			class="cardinal"
+			transform={`rotate(${-$windroseRotateDegrees}, ${100}, ${0.75})`}
+			x={100}
+			y={0.75}
+			alignment-baseline="middle"
+			text-anchor="middle">E</text
+		>
+		<text
+			class="cardinal"
+			transform={`rotate(${-$windroseRotateDegrees}, ${0}, ${101})`}
+			x={0}
+			y={101}
+			alignment-baseline="middle"
+			text-anchor="middle">S</text
+		>
+		<text
+			class="cardinal"
+			transform={`rotate(${-$windroseRotateDegrees}, ${-100}, ${0.75})`}
+			x={-100}
+			y={0.75}
+			alignment-baseline="middle"
+			text-anchor="middle">W</text
+		>
+		<circle
+			cx={0}
+			cy={0}
+			r={100}
+			fill="none"
+			stroke="white"
+			stroke-width="0.25"
+			mask="url(#crossRingMask)"
+		/>
+		<g id="ringRadii" transform={`rotate(${-$windroseRotateDegrees}, 0, 0)`}>
+			{#each ringRadii as radius}
+				<text
+					font-size="6px"
+					y={0.75}
+					x={(100 / maxSpeed) * radius}
+					fill={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
+					text-anchor="middle"
+					alignment-baseline="middle"
+				>
+					{radius}
+				</text>
+				<circle
+					filter="url(#blur)"
+					mask="url(#ringMask)"
+					r={(100 / maxSpeed) * radius}
+					fill="none"
+					stroke={`hsl(${hueForSpeed(radius)}, 100%, 50%)`}
+				/>
+				<circle
+					mask="url(#ringMask)"
+					r={(100 / maxSpeed) * radius}
+					fill="none"
+					stroke={`hsl(${hueForSpeed(radius) - 30}, 100%, 50%)`}
+					stroke-width="0.25"
+				/>
+			{/each}
+		</g>
+		<g id="windDots">
+			{#each $rapid_wind.slice(0, $rapidWindReportLimit * 20) as rw, i}
+				<circle
+					cx={pc(rw.direction, mpsToMph(rw.speed)).x || 0}
+					cy={pc(rw.direction, mpsToMph(rw.speed)).y || 0}
+					r={1}
+					fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
+						1 - (1 / $rapid_wind.slice(0, $rapidWindReportLimit * 20).length) * i
+					})`}
+				/>
+			{/each}
+		</g>
+		<path
+			id="pointer"
+			filter="url(#blur)"
+			d="M0,100 L-22.45139882897927,30.901699437494752 L-2.0244413695060732,2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 -2.024441369506074,-2.786404500042062 L-3.2756149440922124,-4.508497187473714 L0,-100 L3.275614944092212,-4.508497187473714 L2.0244413695060737,-2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 2.0244413695060737,2.786404500042062 L22.451398828979276,30.901699437494752 Z"
+			stroke="hsl(30, 100%, 50%)"
+			fill="none"
+			stroke-width="1"
+			style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
+		/>
+		<path
+			id="pointer"
+			d="M0,100 L-22.45139882897927,30.901699437494752 L-2.0244413695060732,2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 -2.024441369506074,-2.786404500042062 L-3.2756149440922124,-4.508497187473714 L0,-100 L3.275614944092212,-4.508497187473714 L2.0244413695060737,-2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 2.0244413695060737,2.786404500042062 L22.451398828979276,30.901699437494752 Z"
+			stroke="hsl(45, 100%, 50%)"
+			fill="none"
+			stroke-width="0.25"
+			style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
+		/>
+		<path
+			id="pointerWindspeedNeedle"
+			d={`M0,0L${pcs($rapid_wind[0].direction, mpsToMph($rapid_wind[0].speed))}`}
+			stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
+			stroke-width={0.5}
+		/>
 	</g>
-	<g id="windDots">
-		{#each $rapid_wind.slice(0, $rapidWindReportLimit * 20) as rw, i}
-			<circle
-				cx={pc(rw.direction, mpsToMph(rw.speed)).x || 0}
-				cy={pc(rw.direction, mpsToMph(rw.speed)).y || 0}
-				r={1}
-				fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
-					1 - (1 / $rapid_wind.slice(0, $rapidWindReportLimit * 20).length) * i
-				})`}
-			/>
-		{/each}
-	</g>
-	<path
-		id="pointer"
-		filter="url(#blur)"
-		d="M0,100 L-22.45139882897927,30.901699437494752 L-2.0244413695060732,2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 -2.024441369506074,-2.786404500042062 L-3.2756149440922124,-4.508497187473714 L0,-100 L3.275614944092212,-4.508497187473714 L2.0244413695060737,-2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 2.0244413695060737,2.786404500042062 L22.451398828979276,30.901699437494752 Z"
-		stroke="hsl(30, 100%, 50%)"
-		fill="none"
-		stroke-width="1"
-		style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
-	/>
-	<path
-		id="pointer"
-		d="M0,100 L-22.45139882897927,30.901699437494752 L-2.0244413695060732,2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 -2.024441369506074,-2.786404500042062 L-3.2756149440922124,-4.508497187473714 L0,-100 L3.275614944092212,-4.508497187473714 L2.0244413695060737,-2.786404500042062 A3.4441853748633044,3.4441853748633044 0 0 1 2.0244413695060737,2.786404500042062 L22.451398828979276,30.901699437494752 Z"
-		stroke="hsl(45, 100%, 50%)"
-		fill="none"
-		stroke-width="0.25"
-		style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
-	/>
-	<path
-		id="pointerWindspeedNeedle"
-		d={`M0,0L${pcs($rapid_wind[0].direction, mpsToMph($rapid_wind[0].speed))}`}
-		stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
-		stroke-width={0.5}
-	/>
+
 	<!-- <text
 		text-anchor="middle"
 		dominant-baseline="middle"

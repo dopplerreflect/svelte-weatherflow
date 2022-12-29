@@ -1,28 +1,35 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { celsiusToFarenheit, mpsToMph } from '$lib/conversions';
-	import { rapidWindReportLimit } from '$lib/store';
+	import { rapidWindReportLimit, windroseRotateDegrees } from '$lib/store';
 	import type { DecodedObservationEvent, DecodedRapidWindEvent } from '$lib/weatherflow';
 	export let lastRapidWind: DecodedRapidWindEvent;
 	export let lastObsSt: DecodedObservationEvent;
+
+	$: {
+		if (browser) {
+			console.log($windroseRotateDegrees);
+			localStorage.setItem('windroseRotateDegreesValue', JSON.stringify($windroseRotateDegrees));
+		}
+	}
 </script>
 
 <header>
 	<div>Wind Speed: {mpsToMph(lastRapidWind.speed)}</div>
 	<div>Direction: {lastRapidWind.direction}</div>
 	<div>Temp: {celsiusToFarenheit(lastObsSt.airTemperature)}</div>
-	<div>Lull: {mpsToMph(lastObsSt.windLull)}</div>
+	<!-- <div>Lull: {mpsToMph(lastObsSt.windLull)}</div>
 	<div>Avg: {mpsToMph(lastObsSt.windAvg)}</div>
-	<div>Gust: {mpsToMph(lastObsSt.windGust)}</div>
+	<div>Gust: {mpsToMph(lastObsSt.windGust)}</div> -->
+	<div>
+		<input type="range" min={0} max={359} step={1} bind:value={$windroseRotateDegrees} />
+	</div>
 	<div>
 		<select bind:value={$rapidWindReportLimit}>
-			<option>1</option>
-			<option>5</option>
-			<option>10</option>
-			<option>15</option>
-			<option>20</option>
-			<option>25</option>
-			<option>30</option>
+			{#each [1, ...[...Array(6).keys()].map((k) => (k + 1) * 5)] as v}
+				<option value={v}>{v}</option>
+			{/each}
 		</select>
 	</div>
 	<div>
@@ -38,7 +45,7 @@
 	header {
 		height: 1em;
 		display: grid;
-		grid-template-columns: repeat(8, 1fr);
+		grid-template-columns: repeat(6, 1fr);
 	}
 	header div {
 		display: flex;
@@ -47,7 +54,7 @@
 		width: 100%;
 		background-color: hsl(240, 100%, 10%);
 	}
-	input[type='number'] {
-		width: 3em;
+	select {
+		width: 4em;
 	}
 </style>
