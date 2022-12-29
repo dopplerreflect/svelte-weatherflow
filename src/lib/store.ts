@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
 import { io } from 'socket.io-client';
 import {
 	decodeObservationEvent,
@@ -24,3 +25,11 @@ socket.on('obs_st', (message: DecodedObservationEvent[]) => {
 });
 
 export const rapidWindReportLimit = writable(30);
+
+let windroseRotateDegreesValue = 0;
+if (browser) {
+	windroseRotateDegreesValue = JSON.parse(
+		localStorage.getItem('windroseRotateDegreesValue') || '0'
+	);
+}
+export const windroseRotateDegrees = writable(windroseRotateDegreesValue);
