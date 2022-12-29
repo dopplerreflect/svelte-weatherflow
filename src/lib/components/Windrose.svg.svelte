@@ -53,56 +53,6 @@
 	</defs>
 	<circle cx={0} cy={0} r={100} fill="hsl(240, 100%, 10%)" />
 	<g id="windrose" transform={`rotate(${$windroseRotateDegrees}, 0, 0)`}>
-		<circle
-			cx={0}
-			cy={0}
-			r={100}
-			fill="none"
-			stroke="white"
-			filter="url(#blur)"
-			mask="url(#crossRingMask)"
-		/>
-		<text
-			class="cardinal"
-			transform={`rotate(${-$windroseRotateDegrees}, ${0}, ${-99})`}
-			x={0}
-			y={-99}
-			alignment-baseline="middle"
-			text-anchor="middle">N</text
-		>
-		<text
-			class="cardinal"
-			transform={`rotate(${-$windroseRotateDegrees}, ${100}, ${0.75})`}
-			x={100}
-			y={0.75}
-			alignment-baseline="middle"
-			text-anchor="middle">E</text
-		>
-		<text
-			class="cardinal"
-			transform={`rotate(${-$windroseRotateDegrees}, ${0}, ${101})`}
-			x={0}
-			y={101}
-			alignment-baseline="middle"
-			text-anchor="middle">S</text
-		>
-		<text
-			class="cardinal"
-			transform={`rotate(${-$windroseRotateDegrees}, ${-100}, ${0.75})`}
-			x={-100}
-			y={0.75}
-			alignment-baseline="middle"
-			text-anchor="middle">W</text
-		>
-		<circle
-			cx={0}
-			cy={0}
-			r={100}
-			fill="none"
-			stroke="white"
-			stroke-width="0.25"
-			mask="url(#crossRingMask)"
-		/>
 		<g id="ringRadii" transform={`rotate(${-$windroseRotateDegrees}, 0, 0)`}>
 			{#each ringRadii as radius}
 				<text
@@ -166,36 +116,59 @@
 			stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
 			stroke-width={0.5}
 		/>
+		<circle
+			cx={0}
+			cy={0}
+			r={100}
+			fill="none"
+			stroke="white"
+			filter="url(#blur)"
+			mask="url(#crossRingMask)"
+		/>
+		<circle
+			cx={0}
+			cy={0}
+			r={100}
+			fill="none"
+			stroke="white"
+			stroke-width="0.25"
+			mask="url(#crossRingMask)"
+		/>
+		{#each ['N', 'E', 'S', 'W'] as cardinal, i}
+			<circle
+				cx={pc(i * 90, maxSpeed).x}
+				cy={pc(i * 90, maxSpeed).y}
+				r={3}
+				stroke="white"
+				filter="url(#blur)"
+			/>
+			<circle
+				cx={pc(i * 90, maxSpeed).x}
+				cy={pc(i * 90, maxSpeed).y}
+				r={3}
+				stroke="white"
+				stroke-width={0.25}
+			/>
+			<text
+				x={pc(i * 90, maxSpeed).x}
+				y={pc(i * 90, maxSpeed).y}
+				class="cardinal"
+				transform={`rotate(${-$windroseRotateDegrees}, ${pc(i * 90, maxSpeed).x}, ${
+					pc(i * 90, maxSpeed).y
+				}) translate(0,0.6)`}
+				alignment-baseline="middle"
+				text-anchor="middle">{cardinal}</text
+			>
+		{/each}
 	</g>
-
-	<!-- <text
-		text-anchor="middle"
-		dominant-baseline="middle"
-		fill="none"
-		stroke="hsl(30,100%,50%)"
-		filter="url(#blur)"
-	>
-		{mpsToMph($rapid_wind[0].speed)}
-	</text>
-	<text
-		text-anchor="middle"
-		dominant-baseline="middle"
-		fill="black"
-		stroke="hsl(45, 100%, 50%)"
-		stroke-width="0.25"
-	>
-		{mpsToMph($rapid_wind[0].speed)}
-	</text> -->
-	<!-- <text x={-100} y={100} fill="white">{maxSpeed}</text> -->
 </svg>
 
 <style>
 	svg {
 		height: calc(100vh - 1em);
-		/* margin: 1em; */
 	}
 	text.cardinal {
 		fill: white;
-		font-size: 6px;
+		font-size: 5px;
 	}
 </style>
