@@ -3,6 +3,7 @@
 	import { mpsToMph } from '$lib/conversions';
 
 	const pc = (direction: number, speed: number) => {
+		if (maxSpeed === 0) return { x: 0, y: 0 };
 		const coords = {
 			x: (100 / maxSpeed) * speed * Math.cos((direction - 90) * (Math.PI / 180)),
 			y: (100 / maxSpeed) * speed * Math.sin((direction - 90) * (Math.PI / 180))
@@ -24,6 +25,7 @@
 	$: maxSpeed = Math.max(
 		...$rapid_wind.slice(0, $rapidWindReportLimit * 20).map((e) => mpsToMph(e.speed))
 	);
+
 	$: ringRadii = Array.from({ length: Math.ceil(maxSpeed) })
 		.map((_, i) => {
 			const div = maxSpeed > 9.9 ? 5 : 1;
