@@ -1,26 +1,8 @@
 <script lang="ts">
 	import { rapid_wind, rapidWindReportLimit, windroseRotateDegrees } from '$lib/store';
 	import { mpsToMph } from '$lib/conversions';
-
-	const pc = (direction: number, speed: number) => {
-		if (maxSpeed === 0) return { x: 0, y: 0 };
-		const coords = {
-			x: (100 / maxSpeed) * speed * Math.cos((direction - 90) * (Math.PI / 180)),
-			y: (100 / maxSpeed) * speed * Math.sin((direction - 90) * (Math.PI / 180))
-		};
-		return coords;
-	};
-
-	const pcs = (direction: number, speed: number) => {
-		return `${pc(direction, speed).x},${pc(direction, speed).y}`;
-	};
-
-	const hueForSpeed = (mph: number) => {
-		if (mph >= 25) {
-			return -82.5;
-		}
-		return 230 - mph * 12.5;
-	};
+	import { xyCoordinates as c, xyCoordinatesString as cs } from '$lib/geometry';
+	import { hueForSpeed } from '$lib/color';
 
 	$: maxSpeed = Math.max(
 		...$rapid_wind.slice(0, $rapidWindReportLimit * 20).map((e) => mpsToMph(e.speed))
@@ -86,8 +68,8 @@
 		<g id="windDots">
 			{#each $rapid_wind.slice(0, $rapidWindReportLimit * 20) as rw, i}
 				<circle
-					cx={pc(rw.direction, mpsToMph(rw.speed)).x || 0}
-					cy={pc(rw.direction, mpsToMph(rw.speed)).y || 0}
+					cx={c(rw.direction, mpsToMph(rw.speed), maxSpeed).x || 0}
+					cy={c(rw.direction, mpsToMph(rw.speed), maxSpeed).y || 0}
 					r={1}
 					fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
 						1 - (1 / $rapid_wind.slice(0, $rapidWindReportLimit * 20).length) * i
@@ -114,7 +96,7 @@
 		/>
 		<path
 			id="pointerWindspeedNeedle"
-			d={`M0,0L${pcs($rapid_wind[0].direction, mpsToMph($rapid_wind[0].speed))}`}
+			d={`M0,0L${cs($rapid_wind[0].direction, mpsToMph($rapid_wind[0].speed), maxSpeed)}`}
 			stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
 			stroke-width={0.5}
 		/>
@@ -138,26 +120,26 @@
 		/>
 		{#each ['N', 'E', 'S', 'W'] as cardinal, i}
 			<circle
-				cx={pc(i * 90, maxSpeed).x}
-				cy={pc(i * 90, maxSpeed).y}
+				cx={100 * Math.cos((i * 90 - 90) * (Math.PI / 180))}
+				cy={100 * Math.sin((i * 90 - 90) * (Math.PI / 180))}
 				r={3}
 				stroke="white"
 				filter="url(#blur)"
 			/>
 			<circle
-				cx={pc(i * 90, maxSpeed).x}
-				cy={pc(i * 90, maxSpeed).y}
+				cx={100 * Math.cos((i * 90 - 90) * (Math.PI / 180))}
+				cy={100 * Math.sin((i * 90 - 90) * (Math.PI / 180))}
 				r={3}
 				stroke="white"
 				stroke-width={0.25}
 			/>
 			<text
-				x={pc(i * 90, maxSpeed).x}
-				y={pc(i * 90, maxSpeed).y}
+				x={100 * Math.cos((i * 90 - 90) * (Math.PI / 180))}
+				y={100 * Math.sin((i * 90 - 90) * (Math.PI / 180))}
 				class="cardinal"
-				transform={`rotate(${-$windroseRotateDegrees}, ${pc(i * 90, maxSpeed).x}, ${
-					pc(i * 90, maxSpeed).y
-				}) translate(0,0.6)`}
+				transform={`rotate(${-$windroseRotateDegrees}, ${
+					100 * Math.cos((i * 90 - 90) * (Math.PI / 180))
+				}, ${100 * Math.sin((i * 90 - 90) * (Math.PI / 180))}) translate(0,0.6)`}
 				alignment-baseline="middle"
 				text-anchor="middle">{cardinal}</text
 			>
