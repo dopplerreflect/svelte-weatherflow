@@ -4,9 +4,11 @@
 	import { xyCoordinates as c, xyCoordinatesString as cs } from '$lib/geometry';
 	import { hueForSpeed } from '$lib/color';
 
-	$: maxSpeed = Math.max(
-		...$rapid_wind.slice(0, $rapidWindReportLimit * 20).map((e) => mpsToMph(e.speed))
-	);
+	$: mostRecent = $rapid_wind[0];
+
+	$: windArraySize = $rapid_wind.slice(0, $rapidWindReportLimit * 20).length;
+
+	$: maxSpeed = Math.max(...$rapid_wind.slice(0, windArraySize).map((e) => mpsToMph(e.speed)));
 
 	$: ringRadii = Array.from({ length: Math.ceil(maxSpeed) })
 		.map((_, i) => {
@@ -66,13 +68,13 @@
 			{/each}
 		</g>
 		<g id="windDots">
-			{#each $rapid_wind.slice(0, $rapidWindReportLimit * 20) as rw, i}
+			{#each $rapid_wind.slice(0, windArraySize) as rw, i}
 				<circle
 					cx={c(rw.direction, mpsToMph(rw.speed), maxSpeed).x || 0}
 					cy={c(rw.direction, mpsToMph(rw.speed), maxSpeed).y || 0}
 					r={1}
 					fill={`hsla(${hueForSpeed(mpsToMph(rw.speed))}, 100%, 50%, ${
-						1 - (1 / $rapid_wind.slice(0, $rapidWindReportLimit * 20).length) * i
+						1 - (1 / windArraySize) * i
 					})`}
 				/>
 			{/each}
@@ -84,7 +86,7 @@
 			stroke="hsl(30, 100%, 50%)"
 			fill="none"
 			stroke-width="1"
-			style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
+			style={`transform: rotate(${mostRecent.direction}deg)`}
 		/>
 		<path
 			id="pointer"
@@ -92,12 +94,12 @@
 			stroke="hsl(45, 100%, 50%)"
 			fill="none"
 			stroke-width="0.25"
-			style={`transform: rotate(${$rapid_wind[0].direction}deg)`}
+			style={`transform: rotate(${mostRecent.direction}deg)`}
 		/>
 		<path
 			id="pointerWindspeedNeedle"
-			d={`M0,0L${cs($rapid_wind[0].direction, mpsToMph($rapid_wind[0].speed), maxSpeed)}`}
-			stroke={`hsl(${hueForSpeed(mpsToMph($rapid_wind[0].speed))}, 100%, 50%)`}
+			d={`M0,0L${cs(mostRecent.direction, mpsToMph(mostRecent.speed), maxSpeed)}`}
+			stroke={`hsl(${hueForSpeed(mpsToMph(mostRecent.speed))}, 100%, 50%)`}
 			stroke-width={0.5}
 		/>
 		<circle
