@@ -156,5 +156,6 @@
 	text.cardinal {
 		fill: white;
 		font-size: 5px;
+		font-weight: bold;
 	}
 </style>
