@@ -10,6 +10,7 @@
 	$: {
 		if (browser) {
 			localStorage.setItem('windroseRotateDegreesValue', JSON.stringify($windroseRotateDegrees));
+			document.title = `${celsiusToFarenheit(lastObsSt.airTemperature)}°`;
 		}
 	}
 </script>
