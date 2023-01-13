@@ -13,3 +13,5 @@ weatherflow(new Server(server));
 app.use(handler);
 
 server.listen(port);
+
+console.log(`Server listening or ${port}`);
