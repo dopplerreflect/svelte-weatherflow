@@ -3,6 +3,7 @@
 	import { mpsToMph } from '$lib/conversions';
 	import { xyCoordinates as c, xyCoordinatesString as cs } from '$lib/geometry';
 	import { hueForSpeed } from '$lib/color';
+	import { onMount } from 'svelte';
 
 	$: mostRecent = $rapid_wind[0];
 
@@ -20,9 +21,30 @@
 		})
 		.filter((v) => v !== -1)
 		.slice(1);
+
+	let svg: SVGElement;
+
+	onMount(async () => {
+		let active = false;
+		let lastYpos = 0;
+		svg.addEventListener('mousedown', (event) => {
+			active = true;
+			lastYpos = event.clientY;
+		});
+		svg.addEventListener('mouseup', () => {
+			active = false;
+		});
+		svg.addEventListener('mousemove', (event) => {
+			if (!active) return;
+			$windroseRotateDegrees =
+				event.clientY < lastYpos ? $windroseRotateDegrees - 1 : $windroseRotateDegrees + 1;
+
+			lastYpos = event.clientY;
+		});
+	});
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-105 -105 210 210">
+<svg bind:this={svg} xmlns="http://www.w3.org/2000/svg" viewBox="-105 -105 210 210">
 	<defs>
 		<mask id="ringMask">
 			<path d="M-100,-100H100V100H-100Z" fill="white" />
