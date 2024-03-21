@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { obs_st, rapid_wind } from '$lib/store';
 	import { celsiusToFarenheit, mpsToMph } from '$lib/conversions';
+	import { hueForSpeed } from '$lib/color';
 </script>
 
 <main>
@@ -20,7 +21,9 @@
 								timeStyle: 'medium'
 							})}</td
 						>
-						<td>{mpsToMph(rapid_wind.speed)}</td>
+						<td style={`color:hsla(${hueForSpeed(mpsToMph(rapid_wind.speed))}, 100%, 50%`}
+							>{mpsToMph(rapid_wind.speed)}</td
+						>
 						<td>{rapid_wind.direction}</td>
 					</tr>
 				{/each}
@@ -46,9 +49,15 @@
 							})}</td
 						>
 						<td>{celsiusToFarenheit(obs_st.airTemperature)}</td>
-						<td>{mpsToMph(obs_st.windLull)}</td>
-						<td>{mpsToMph(obs_st.windAvg)}</td>
-						<td>{mpsToMph(obs_st.windGust)}</td>
+						<td style={`color:hsla(${hueForSpeed(mpsToMph(obs_st.windLull))}, 100%, 50%`}
+							>{mpsToMph(obs_st.windLull)}</td
+						>
+						<td style={`color:hsla(${hueForSpeed(mpsToMph(obs_st.windAvg))}, 100%, 50%`}
+							>{mpsToMph(obs_st.windAvg)}</td
+						>
+						<td style={`color:hsla(${hueForSpeed(mpsToMph(obs_st.windGust))}, 100%, 50%`}
+							>{mpsToMph(obs_st.windGust)}</td
+						>
 					</tr>
 				{/each}
 			</tbody>
