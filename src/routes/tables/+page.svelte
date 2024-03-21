@@ -6,7 +6,7 @@
 
 <main>
 	<div>
-		<table>
+		<table cellspacing="0">
 			<caption>Entries: {$rapid_wind.length}</caption>
 			<thead>
 				<th>Time</th>
@@ -31,7 +31,7 @@
 		</table>
 	</div>
 	<div>
-		<table>
+		<table cellspacing="0">
 			<caption>Entries: {$obs_st.length}</caption>
 			<thead>
 				<th>Time</th>
@@ -77,6 +77,9 @@
 	}
 	table {
 		width: 100%;
+	}
+	tr:nth-child(even) {
+		background-color: hsla(0, 0%, 15%);
 	}
 	td {
 		text-align: center;
