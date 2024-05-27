@@ -17,6 +17,7 @@
 
 <header>
 	<div>Temp: {celsiusToFarenheit(lastObsSt.airTemperature)}</div>
+	<div>Humidity: {lastObsSt.relativeHumidity}</div>
 	<div>Wind Speed: {mpsToMph(lastRapidWind.speed)}</div>
 	<div>Direction: {lastRapidWind.direction}</div>
 
@@ -52,7 +53,7 @@
 	header {
 		height: 1em;
 		display: grid;
-		grid-template-columns: repeat(6, 1fr);
+		grid-template-columns: repeat(7, 1fr);
 	}
 	header div {
 		display: flex;

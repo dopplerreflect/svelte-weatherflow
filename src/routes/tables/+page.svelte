@@ -36,6 +36,7 @@
 			<thead>
 				<th>Time</th>
 				<th>Temp</th>
+				<th>Humidity</th>
 				<th>Lull</th>
 				<th>Avg</th>
 				<th>Gust</th>
@@ -49,6 +50,7 @@
 							})}</td
 						>
 						<td>{celsiusToFarenheit(obs_st.airTemperature)}</td>
+						<td>{obs_st.relativeHumidity}</td>
 						<td style={`color:hsla(${hueForSpeed(mpsToMph(obs_st.windLull))}, 100%, 50%`}
 							>{mpsToMph(obs_st.windLull)}</td
 						>
